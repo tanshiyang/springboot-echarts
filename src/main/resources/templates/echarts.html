@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th=www.thymeleaf.org>
+<head>
+    <meta charset="UTF-8">
+    <title>echarts测试</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/4.6.0/echarts.min.js"></script>
+</head>
+<body>
+
+    <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+    <div id="main" style="width: 600px;height:400px;"></div>
+
+    <!--<input type="hidden" th:value="${skirt}" id="skirt"/>
+    <input type="hidden" th:value="${nums}" id="nums"/>-->
+
+    <script type="text/javascript">
+        //获取url中的参数
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        var result = $.ajax({
+            url:"getData?ts_code="+getUrlParam("ts_code")+"&end_date="+getUrlParam("end_date"),
+            async:false
+        });
+        var skirt=result.responseJSON.data.dates;
+        var nums=result.responseJSON.data.jlr;
+        var xse=result.responseJSON.data.xse;
+        // var skirt="[[${skirt}]]";
+        // var nums="[[${nums}]]";
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: getUrlParam("ts_code")
+            },
+            tooltip: {},
+            legend: {
+                data:['销量']
+            },
+            xAxis: {
+                data: skirt
+            },
+            yAxis: {},
+            series: [{
+                name: 'JLR',
+                type: 'bar',
+                data: nums
+            }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
+
+</body>
+</html>
