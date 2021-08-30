@@ -31,13 +31,14 @@
         var skirt=result.responseJSON.data.dates;
         var nums=result.responseJSON.data.jlr;
         var xse=result.responseJSON.data.xse;
+        var noticeDate = result.responseJSON.data.noticeDate;
         // var skirt="[[${skirt}]]";
         // var nums="[[${nums}]]";
 
         // 指定图表的配置项和数据
         var option = {
             title: {
-                text: getUrlParam("ts_code")
+                text: getUrlParam("ts_code") + '-' + noticeDate
             },
             tooltip: {},
             legend: {
