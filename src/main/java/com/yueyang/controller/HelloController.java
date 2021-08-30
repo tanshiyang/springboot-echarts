@@ -78,12 +78,12 @@ public class HelloController {
     private AjaxResult getJlrList(String ts_code, Long end_date) throws IOException {
         DataFrame<Object> df = DataFrame.readXls("e:\\stocks\\easymony_fina\\" + ts_code + ".xls");
         Set<Object> columns = df.columns();
+        SimpleDateFormat ft = new SimpleDateFormat("yyyyMMdd");
         DataFrame<Object> select = df.select(new DataFrame.Predicate<Object>() {
             @Override
             public Boolean apply(List<Object> values) {
                 int colIndex = getColumnIndex(columns, "REPORTDATE");
                 //df.columns.get("REPORTDATE");
-                SimpleDateFormat ft = new SimpleDateFormat("yyyyMMdd");
                 String value = ft.format(values.get(colIndex));
 //                String value = ((String) values.get(colIndex)).replace("-", "").replace(" 00:00:00", "");
                 if (value.equals("")) {
@@ -106,17 +106,23 @@ public class HelloController {
 //            jlrs.add(jlr);
             xses.add(xse);
 
-            int year = Integer.parseInt(period.substring(0,4));
-            String q = period.substring(4,6);
+            int year = Integer.parseInt(period.substring(0, 4));
+            String q = period.substring(4, 6);
             if (!q.equals("Q1")) {
                 jlrs.add(jlr - pre_jlr);
-            }
-            else {
+            } else {
                 jlrs.add(jlr);
             }
             pre_jlr = jlr;
         }
-        AjaxResult result = AjaxResult.success().put("dates", dates).put("jlr", jlrs).put("xse",xses);
+
+        String noticeDate = ft.format(select.col(getColumnIndex(columns, "NOTICE_DATE")).get(0));
+
+        AjaxResult result = AjaxResult.success()
+                .put("noticeDate", noticeDate)
+                .put("dates", dates)
+                .put("jlr", jlrs)
+                .put("xse", xses);
         return result;
     }
 }

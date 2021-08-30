@@ -5,86 +5,141 @@
     <title>echarts测试</title>
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
     <script src="https://cdn.bootcss.com/echarts/4.6.0/echarts.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery.sticky/1.0.4/jquery.sticky.min.js"></script>
     <style>
-        div{
+        div {
             float: left;
+        }
+
+        #sticker {
+            background: #bada55;
+            color: white;
+            width: 200px;
+            font-family: Droid Sans;
+            font-size: 20px;
+            line-height: 1.6em;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+            border-radius: 10px;
+            float: right;
+            height: 80%;
+        }
+
+        #wrapper {
+            width: 1000px;
+            margin: 0 auto;
+        }
+
+        #txtStocks {
+            width: 98%;
+            height: 98%;
         }
     </style>
 </head>
 <body>
-
-    <div id="charts">
-    <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-<!--    <div id="main" style="width: 600px;height:400px;"></div>-->
-    </div>
-
-    <!--<input type="hidden" th:value="${skirt}" id="skirt"/>
-    <input type="hidden" th:value="${nums}" id="nums"/>-->
-
-    <script type="text/javascript">
-        //获取url中的参数
-        function getUrlParam(name) {
-            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
-            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
-            if (r != null) return unescape(r[2]); return null; //返回参数值
-        }
-
-        function show() {
-            var result = $.ajax({
-                url: "getTsCodes?period=" + getUrlParam("period"),
-                async: false
-            }).responseJSON;
-            $(result.codes).each(function () {
-                var code = this.toString();
-                var el = $('<div>' +
-                    '<div style="text-align: center;width:100%"> <a target="_blank" href="echarts?ts_code=' + code + '&end_date=' +getUrlParam("period") + '">' +
-                    code + '</a></div>'+
-                    '<div id="' + code + '" style="width: 400px;height:300px;"></div>'+
-                    '</div>');
-                el.appendTo($('#charts'));
-                chartOne(code);
-            });
-        }
-
-        function chartOne(code) {
-            // 基于准备好的dom，初始化echarts实例
-            var myChart = echarts.init(document.getElementById(code));
-            var result = $.ajax({
-                url: "getData?ts_code=" + code+ "&end_date=" + getUrlParam("period"),
-                async: false
-            });
-            var skirt = result.responseJSON.data.dates;
-            var nums = result.responseJSON.data.jlr;
-            var xse = result.responseJSON.data.xse;
-            // var skirt="[[${skirt}]]";
-            // var nums="[[${nums}]]";
-
-            // 指定图表的配置项和数据
-            var option = {
-                title: {
-                    text: code + '-' + getUrlParam("period")
-                },
-                tooltip: {},
-                legend: {
-                    data: ['净利润']
-                },
-                xAxis: {
-                    data: skirt
-                },
-                yAxis: {},
-                series: [{
-                    name: 'JLR',
-                    type: 'bar',
-                    data: nums
-                }]
-            };
-
-            // 使用刚指定的配置项和数据显示图表。
-            myChart.setOption(option);
-        }
-
-        show();
+<div id="wrapper">
+    <div id="sticker"><textarea id="txtStocks"></textarea></div>
+    <script>
+        $(document).ready(function () {
+            $("#sticker").sticky({topSpacing: 50});
+        });
     </script>
+    <div id="charts">
+        <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+        <!--    <div id="main" style="width: 600px;height:400px;"></div>-->
+    </div>
+</div>
+
+<script type="text/javascript">
+    //获取url中的参数
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null) return unescape(r[2]);
+        return null; //返回参数值
+    }
+
+    function show() {
+        var result = $.ajax({
+            url: "getTsCodes?period=" + getUrlParam("period"),
+            async: false
+        }).responseJSON;
+        $(result.codes).each(function () {
+            var code = this.toString();
+            var el = $('<div>' +
+                '<div style="text-align: center;width:100%"> ' +
+                '<a target="_blank" href="echarts?ts_code=' + code + '&end_date=' + getUrlParam("period") + '">' + code + '</a>' +
+                '&nbsp;<a href="javascript:;" onclick="add(\'' + code + '\')">+</a>' +
+                '&nbsp;<a href="javascript:;" onclick="remove(\'' + code + '\')">-</a>' +
+                '</div>' +
+                '<div id="' + code + '" style="width: 400px;height:300px;"></div>' +
+                '</div>');
+            el.appendTo($('#charts'));
+            chartOne(code);
+        });
+    }
+
+    function add(code) {
+        var oldVal = $("#txtStocks").val();
+        if (oldVal.indexOf(code) >= 0) return;
+        $("#txtStocks").val(oldVal + "\n" + code);
+
+        var scrollTop = $("#txtStocks").scrollHeight;
+        $("#txtStocks").scrollTop(scrollTop);
+    }
+
+    function remove(code){
+        var oldVal = $("#txtStocks").val();
+        oldVal = oldVal.replace(code,"");
+        oldVal = oldVal.replace(/\n\n/,"");
+        $("#txtStocks").val(oldVal);
+
+        var scrollTop = $("#txtStocks").scrollHeight;
+        $("#txtStocks").scrollTop(scrollTop);
+    }
+
+    function chartOne(code) {
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById(code));
+        var result = $.ajax({
+            url: "getData?ts_code=" + code + "&end_date=" + getUrlParam("period"),
+            async: false
+        });
+        var skirt = result.responseJSON.data.dates;
+        var nums = result.responseJSON.data.jlr;
+        var xse = result.responseJSON.data.xse;
+        var noticeDate = result.responseJSON.data.noticeDate;
+        // var skirt="[[${skirt}]]";
+        // var nums="[[${nums}]]";
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: code + '-' + noticeDate
+            },
+            tooltip: {},
+            legend: {
+                data: ['净利润']
+            },
+            xAxis: {
+                data: skirt
+            },
+            yAxis: {},
+            series: [{
+                name: 'JLR',
+                type: 'bar',
+                data: nums
+            }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    }
+
+    show();
+</script>
 
 </body>
 </html>
