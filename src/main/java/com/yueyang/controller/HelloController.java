@@ -22,7 +22,7 @@ public class HelloController {
 
     @RequestMapping("/index")
     public String sayHello() {
-        return "index";
+        return "allcharts";
     }
 
     @RequestMapping("/demo")
@@ -32,11 +32,11 @@ public class HelloController {
 
     @RequestMapping("/echarts")
     public String myECharts(Model model, String ts_code, Long end_date) throws IOException {
-        AjaxResult jlrList = getJlrList(ts_code, end_date);
-
-        model.addAttribute("skirt", jlrList.get("dates"));
-        model.addAttribute("nums", jlrList.get("jlr"));
-        model.addAttribute("xse", jlrList.get("xse"));
+//        AjaxResult jlrList = getJlrList(ts_code, end_date);
+//
+//        model.addAttribute("skirt", jlrList.get("dates"));
+//        model.addAttribute("nums", jlrList.get("jlr"));
+//        model.addAttribute("xse", jlrList.get("xse"));
 
         return "echarts";
     }
@@ -108,7 +108,7 @@ public class HelloController {
 
             int year = Integer.parseInt(period.substring(0,4));
             String q = period.substring(4,6);
-            if (nowYear>year && !q.equals("Q1")) {
+            if (!q.equals("Q1")) {
                 jlrs.add(jlr - pre_jlr);
             }
             else {
