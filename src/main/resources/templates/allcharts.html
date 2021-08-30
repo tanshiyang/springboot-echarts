@@ -36,7 +36,11 @@
             }).responseJSON;
             $(result.codes).each(function () {
                 var code = this.toString();
-                var el = $('<div id="' + code + '" style="width: 400px;height:300px;"></div>');
+                var el = $('<div>' +
+                    '<div style="text-align: center;width:100%"> <a target="_blank" href="echarts?ts_code=' + code + '&end_date=' +getUrlParam("period") + '">' +
+                    code + '</a></div>'+
+                    '<div id="' + code + '" style="width: 400px;height:300px;"></div>'+
+                    '</div>');
                 el.appendTo($('#charts'));
                 chartOne(code);
             });
@@ -46,7 +50,7 @@
             // 基于准备好的dom，初始化echarts实例
             var myChart = echarts.init(document.getElementById(code));
             var result = $.ajax({
-                url: "getData?ts_code=" + code+ "&end_date=" + getUrlParam("end_date"),
+                url: "getData?ts_code=" + code+ "&end_date=" + getUrlParam("period"),
                 async: false
             });
             var skirt = result.responseJSON.data.dates;
@@ -58,7 +62,7 @@
             // 指定图表的配置项和数据
             var option = {
                 title: {
-                    text: code
+                    text: code + '-' + getUrlParam("period")
                 },
                 tooltip: {},
                 legend: {
