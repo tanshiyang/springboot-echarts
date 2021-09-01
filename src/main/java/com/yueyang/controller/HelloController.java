@@ -4,10 +4,19 @@ import com.yueyang.AjaxResult;
 import joinery.DataFrame;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -124,6 +133,39 @@ public class HelloController {
                 .put("jlr", jlrs)
                 .put("xse", xses);
         return result;
+    }
+
+    @PostMapping("upload")
+    public String fileUpload(@RequestParam("file") MultipartFile srcFile, RedirectAttributes redirectAttributes) {
+        if (srcFile.isEmpty()) {
+            redirectAttributes.addFlashAttribute("message", "请选择一个文件");
+            return "index";
+        }
+        try {
+            File destFile = new File("d:\\temp\\");
+            if (!destFile.exists()) {
+                destFile = new File("");
+            }
+            System.out.println("file path:" + destFile.getAbsolutePath());
+            SimpleDateFormat sf_ = new SimpleDateFormat("yyyyMMddHHmmss");
+            String times = sf_.format(new Date());
+            File upload = new File(destFile.getAbsolutePath(), "picture/" + times);
+            if (!upload.exists()) {
+                upload.mkdirs();
+            }
+            System.out.println("完整的上传路径：" + upload.getAbsolutePath() + "/" + srcFile);
+            byte[] bytes = srcFile.getBytes();
+            Path path = Paths.get(upload.getAbsolutePath() + "/" + srcFile.getOriginalFilename());
+            Files.write(path, bytes);
+            String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+            String fileName = srcFile.getOriginalFilename();
+            String suffixName = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            String newFileName = uuid + "." + suffixName;
+            redirectAttributes.addFlashAttribute("message", "文件上传成功" + newFileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "index";
     }
 }
 
