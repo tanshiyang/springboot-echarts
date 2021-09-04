@@ -124,8 +124,19 @@ public class HelloController {
             }
             pre_jlr = jlr;
         }
+        String noticeDate = "";
+        Object notice_date = select.col(getColumnIndex(columns, "NOTICE_DATE")).get(0);
+        try {
+            if(notice_date.getClass()==String.class){
+                noticeDate = notice_date.toString().replace("-", "").replace(" 00:00:00", "");
+            }
+            else {
+                noticeDate = ft.format(notice_date);
+            }
+        }
+        catch (Exception exception){
 
-        String noticeDate = ft.format(select.col(getColumnIndex(columns, "NOTICE_DATE")).get(0));
+        }
 
         AjaxResult result = AjaxResult.success()
                 .put("noticeDate", noticeDate)
