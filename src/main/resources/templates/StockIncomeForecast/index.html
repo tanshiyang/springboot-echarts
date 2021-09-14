@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th=www.thymeleaf.org>
+<head>
+    <meta charset="UTF-8">
+    <title>盈利预测分析</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/4.6.0/echarts.min.js"></script>
+    <style>
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <div id="list">
+
+    </div>
+
+    <div id="charts">
+        <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+        <!--    <div id="main" style="width: 600px;height:400px;"></div>-->
+    </div>
+</div>
+
+<script type="text/javascript">
+    function showAsList(result) {
+        let lastFileNames = null;
+        for (let i = result.files.length-1; i >= 0; i--) {
+            let file = result.files[i];
+            let fileData = $.ajax({
+                url: "getFileData?fileName=" + file,
+                async: false
+            });
+            let names = fileData.responseJSON.names;
+            if(names== undefined){
+                continue;
+            }
+            let html = '<div class="row">' +
+                '<div class="col-md-2">' + file.replace("预测盈利分析-", "") + '</div>';
+
+            for (let j = 0; j < names.length; j++) {
+                let name = names[j]
+                if(lastFileNames!=null &&　$.inArray(name, lastFileNames)==-1){
+                    name = '<b>'+name + '</b>';
+                }
+                html += '<div class="col-md-1">' + name + '</div>';
+            }
+            html += '</div>';
+            let el = $(html);
+            el.prependTo($('#list'));
+            lastFileNames = names;
+        }
+    }
+
+    function show() {
+        var result = $.ajax({
+            url: "getFiles",
+            async: false
+        }).responseJSON;
+        showAsList(result);
+        $(result.files).each(function () {
+            var file = this.toString();
+            var el = $('<div>' +
+                '<div style="text-align: center;width:100%"> ' +
+                '<div id="' + file + '" style="width: 400px;height:300px;"></div>' +
+                '</div>');
+            el.appendTo($('#charts'));
+            chartOne(file);
+        });
+    }
+
+    function chartOne(file) {
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById(file));
+        var result = $.ajax({
+            url: "getFileData?fileName=" + file,
+            async: false
+        });
+        var names = result.responseJSON.names;
+        var values = result.responseJSON.values;
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: file.replace("预测盈利分析-", "")
+            },
+            tooltip: {},
+            legend: {
+                data: ['']
+            },
+            xAxis: {
+                data: names
+            },
+            yAxis: {},
+            series: [{
+                name: 'Value',
+                type: 'bar',
+                data: values
+            }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    }
+
+    show();
+</script>
+
+</body>
+</html>

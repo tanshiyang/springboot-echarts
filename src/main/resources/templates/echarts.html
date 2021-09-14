@@ -25,7 +25,7 @@
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById('main'));
         var result = $.ajax({
-            url:"getData?ts_code="+getUrlParam("ts_code")+"&end_date="+getUrlParam("end_date"),
+            url:"getData?ts_code="+getUrlParam("ts_code")+"&end_date="+getUrlParam("end_date")+"&qty="+(getUrlParam("qty")??8),
             async:false
         });
         var skirt=result.responseJSON.data.dates;

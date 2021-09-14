@@ -70,7 +70,7 @@
             var code = this.toString();
             var el = $('<div>' +
                 '<div style="text-align: center;width:100%"> ' +
-                '<a target="_blank" href="echarts?ts_code=' + code + '&end_date=' + getUrlParam("period") + '">' + code + '</a>' +
+                '<a target="_blank" href="echarts?ts_code=' + code + '&end_date=' + getUrlParam("period") + '&qty=8">' + code + '</a>' +
                 '&nbsp;<a href="javascript:;" onclick="add(\'' + code + '\')">+</a>' +
                 '&nbsp;<a href="javascript:;" onclick="remove(\'' + code + '\')">-</a>' +
                 '</div>' +
@@ -90,10 +90,10 @@
         $("#txtStocks").scrollTop(scrollTop);
     }
 
-    function remove(code){
+    function remove(code) {
         var oldVal = $("#txtStocks").val();
-        oldVal = oldVal.replace(code,"");
-        oldVal = oldVal.replace(/\n\n/,"");
+        oldVal = oldVal.replace(code, "");
+        oldVal = oldVal.replace(/\n\n/, "");
         $("#txtStocks").val(oldVal);
 
         var scrollTop = $("#txtStocks").scrollHeight;
@@ -104,7 +104,7 @@
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById(code));
         var result = $.ajax({
-            url: "getData?ts_code=" + code + "&end_date=" + getUrlParam("period"),
+            url: "getData?ts_code=" + code + "&end_date=" + getUrlParam("period") + "&qty=" + (getUrlParam("qty")??8),
             async: false
         });
         var skirt = result.responseJSON.data.dates;

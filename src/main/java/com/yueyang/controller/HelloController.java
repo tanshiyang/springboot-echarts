@@ -2,6 +2,7 @@ package com.yueyang.controller;
 
 import com.yueyang.AjaxResult;
 import joinery.DataFrame;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ResourceUtils;
@@ -69,8 +70,8 @@ public class HelloController {
 
     @RequestMapping("/getData")
     @ResponseBody
-    public AjaxResult getData(String ts_code, Long end_date) throws IOException {
-        AjaxResult jlrList = getJlrList(ts_code, end_date);
+    public AjaxResult getData(String ts_code, Long end_date,  Integer qty) throws IOException {
+        AjaxResult jlrList = getJlrList(ts_code, end_date, qty);
         return AjaxResult.success(jlrList);
     }
 
@@ -84,7 +85,7 @@ public class HelloController {
         return result;
     }
 
-    private AjaxResult getJlrList(String ts_code, Long end_date) throws IOException {
+    private AjaxResult getJlrList(String ts_code, Long end_date, Integer qty) throws IOException {
         DataFrame<Object> df = DataFrame.readXls("e:\\stocks\\easymony_fina\\" + ts_code + ".xls");
         Set<Object> columns = df.columns();
         SimpleDateFormat ft = new SimpleDateFormat("yyyyMMdd");
@@ -101,7 +102,10 @@ public class HelloController {
                 return Long.parseLong(value) <= end_date;
             }
         });
-        int x = Math.min(8, select.length() - 1);
+        if (qty == null) {
+            qty = 8;
+        }
+        int x = Math.min(qty + 1, select.length() - 1);
         List<String> dates = new ArrayList<>();
         List<Double> jlrs = new ArrayList<>();
         List<Double> xses = new ArrayList<>();
@@ -124,17 +128,17 @@ public class HelloController {
             }
             pre_jlr = jlr;
         }
+        dates.remove(0);
+        jlrs.remove(0);
         String noticeDate = "";
         Object notice_date = select.col(getColumnIndex(columns, "NOTICE_DATE")).get(0);
         try {
-            if(notice_date.getClass()==String.class){
+            if (notice_date.getClass() == String.class) {
                 noticeDate = notice_date.toString().replace("-", "").replace(" 00:00:00", "");
-            }
-            else {
+            } else {
                 noticeDate = ft.format(notice_date);
             }
-        }
-        catch (Exception exception){
+        } catch (Exception exception) {
 
         }
 
