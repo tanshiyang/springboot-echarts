@@ -22,16 +22,24 @@
 </div>
 
 <script type="text/javascript">
+    //获取url中的参数
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null) return unescape(r[2]);
+        return null; //返回参数值
+    }
+
     function showAsList(result) {
         let lastFileNames = null;
-        for (let i = result.files.length-1; i >= 0; i--) {
+        for (let i = result.files.length - 1; i >= 0; i--) {
             let file = result.files[i];
             let fileData = $.ajax({
-                url: "getFileData?fileName=" + file,
+                url: "getFileData?fileName=" + file + "&qty=" + (getUrlParam("qty") ?? 5),
                 async: false
             });
             let names = fileData.responseJSON.names;
-            if(names== undefined){
+            if (names == undefined) {
                 continue;
             }
             let html = '<div class="row">' +
@@ -39,8 +47,8 @@
 
             for (let j = 0; j < names.length; j++) {
                 let name = names[j]
-                if(lastFileNames!=null &&　$.inArray(name, lastFileNames)==-1){
-                    name = '<b>'+name + '</b>';
+                if (lastFileNames != null && $.inArray(name, lastFileNames) == -1) {
+                    name = '<b>' + name + '</b>';
                 }
                 html += '<div class="col-md-1">' + name + '</div>';
             }
@@ -61,7 +69,7 @@
             var file = this.toString();
             var el = $('<div>' +
                 '<div style="text-align: center;width:100%"> ' +
-                '<div id="' + file + '" style="width: 400px;height:300px;"></div>' +
+                '<div id="' + file + '" style="width: 600px;height:400px;"></div>' +
                 '</div>');
             el.appendTo($('#charts'));
             chartOne(file);
@@ -72,7 +80,7 @@
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById(file));
         var result = $.ajax({
-            url: "getFileData?fileName=" + file,
+            url: "getFileData?fileName=" + file + "&qty=" + (getUrlParam("qty") ?? 5),
             async: false
         });
         var names = result.responseJSON.names;

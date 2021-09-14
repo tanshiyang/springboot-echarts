@@ -51,7 +51,7 @@ public class StockIncomeForecastController {
                 if (resultFileList.size() >= qty) {
                     break;
                 }
-                if(f.getName().contains("预测盈利分析")) {
+                if (f.getName().contains("预测盈利分析")) {
                     resultFileList.add(f.getName());
                 }
             }
@@ -78,15 +78,18 @@ public class StockIncomeForecastController {
 
     @RequestMapping("/getFileData")
     @ResponseBody
-    public AjaxResult getData(String fileName) throws IOException {
+    public AjaxResult getData(String fileName, Integer qty) throws IOException {
         DataFrame<Object> df = DataFrame.readXls("C:\\Users\\tanshiyang\\OneDrive\\文档\\stock\\盈利预测分析\\" + fileName);
         Set<Object> columns = df.columns();
-        int count = Math.min(5, df.length() - 1);
+        if (qty == null) {
+            qty = 5;
+        }
+        int count = Math.min(qty, df.length() - 1);
         List<String> names = new ArrayList<>();
         List<Double> values = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             String name = df.col(getColumnIndex(columns, "name")).get(i).toString();
-            name = name.replace("预测盈利分析-","");
+            name = name.replace("预测盈利分析-", "");
             Double value = (Double) df.col(getColumnIndex(columns, "净利较上年")).get(i);
             names.add(name);
             values.add(value);
