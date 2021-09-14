@@ -39,6 +39,7 @@
                 async: false
             });
             let names = fileData.responseJSON.names;
+            let values = fileData.responseJSON.values;
             if (names == undefined) {
                 continue;
             }
@@ -50,7 +51,7 @@
                 if (lastFileNames != null && $.inArray(name, lastFileNames) == -1) {
                     name = '<b>' + name + '</b>';
                 }
-                html += '<div class="col-md-1">' + name + '</div>';
+                html += '<div class="col-md-1">' + name + '<br/><sup>' + values[j] + '</sup>' + '</div>';
             }
             html += '</div>';
             let el = $(html);
@@ -61,7 +62,7 @@
 
     function show() {
         var result = $.ajax({
-            url: "getFiles",
+            url: "getFiles?fileQty=" + (getUrlParam("fileQty") ?? 365),
             async: false
         }).responseJSON;
         showAsList(result);

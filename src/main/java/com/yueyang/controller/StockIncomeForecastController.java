@@ -20,9 +20,9 @@ public class StockIncomeForecastController {
 
     @RequestMapping("/getFiles")
     @ResponseBody
-    private AjaxResult getFiles(Integer qty) throws IOException {
-        if (qty == null) {
-            qty = 100;
+    private AjaxResult getFiles(Integer fileQty) throws IOException {
+        if (fileQty == null) {
+            fileQty = 365;
         }
         File dir = new File("C:\\Users\\tanshiyang\\OneDrive\\文档\\stock\\盈利预测分析");
         if (dir.exists()) {
@@ -48,7 +48,7 @@ public class StockIncomeForecastController {
 
             List<String> resultFileList = new ArrayList<String>();
             for (File f : fileList) {
-                if (resultFileList.size() >= qty) {
+                if (resultFileList.size() >= fileQty) {
                     break;
                 }
                 if (f.getName().contains("预测盈利分析")) {
