@@ -20,11 +20,11 @@ public class StockIncomeForecastController {
 
     @RequestMapping("/getFiles")
     @ResponseBody
-    private AjaxResult getFiles(Integer fileQty) throws IOException {
+    private AjaxResult getFiles(String dataType, Integer fileQty) throws IOException {
         if (fileQty == null) {
             fileQty = 365;
         }
-        File dir = new File("C:\\Users\\tanshiyang\\OneDrive\\文档\\stock\\盈利预测分析");
+        File dir = new File(getDataPath(dataType));
         if (dir.exists()) {
             File[] files = dir.listFiles();
             List<File> fileList = new ArrayList<File>();
@@ -78,8 +78,8 @@ public class StockIncomeForecastController {
 
     @RequestMapping("/getFileData")
     @ResponseBody
-    public AjaxResult getData(String fileName, Integer qty) throws IOException {
-        DataFrame<Object> df = DataFrame.readXls("C:\\Users\\tanshiyang\\OneDrive\\文档\\stock\\盈利预测分析\\" + fileName);
+    public AjaxResult getData(String dataType, String fileName, Integer qty) throws IOException {
+        DataFrame<Object> df = DataFrame.readXls(getDataPath(dataType) + fileName);
         Set<Object> columns = df.columns();
         if (qty == null) {
             qty = 5;
@@ -95,5 +95,14 @@ public class StockIncomeForecastController {
             values.add(value);
         }
         return AjaxResult.success().put("names", names).put("values", values);
+    }
+
+    private String getDataPath(String dataType){
+        if(dataType.equals("jlr")){
+            return "C:\\Users\\tanshiyang\\OneDrive\\文档\\stock\\盈利预测分析\\";
+        }
+        else{
+            return "C:\\Users\\tanshiyang\\OneDrive\\文档\\stock\\盈利预测分析-每股收益\\";
+        }
     }
 }

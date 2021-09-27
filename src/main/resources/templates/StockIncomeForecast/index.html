@@ -35,7 +35,7 @@
         for (let i = result.files.length - 1; i >= 0; i--) {
             let file = result.files[i];
             let fileData = $.ajax({
-                url: "getFileData?fileName=" + file + "&qty=" + (getUrlParam("qty") ?? 5),
+                url: "getFileData?dataType=" + (getUrlParam("dataType") ?? "jlr") + "&fileName=" + file + "&qty=" + (getUrlParam("qty") ?? 5),
                 async: false
             });
             let names = fileData.responseJSON.names;
@@ -62,7 +62,7 @@
 
     function show() {
         var result = $.ajax({
-            url: "getFiles?fileQty=" + (getUrlParam("fileQty") ?? 365),
+            url: "getFiles?dataType=" + (getUrlParam("dataType") ?? "jlr") + "&fileQty=" + (getUrlParam("fileQty") ?? 365),
             async: false
         }).responseJSON;
         showAsList(result);
@@ -81,7 +81,7 @@
         // 基于准备好的dom，初始化echarts实例
         var myChart = echarts.init(document.getElementById(file));
         var result = $.ajax({
-            url: "getFileData?fileName=" + file + "&qty=" + (getUrlParam("qty") ?? 5),
+            url: "getFileData?dataType=" + (getUrlParam("dataType") ?? "jlr") + "&fileName=" + file + "&qty=" + (getUrlParam("qty") ?? 5),
             async: false
         });
         var names = result.responseJSON.names;
