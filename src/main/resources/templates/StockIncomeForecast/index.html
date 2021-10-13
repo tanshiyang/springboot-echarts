@@ -2,11 +2,14 @@
 <html lang="en" xmlns:th=www.thymeleaf.org>
 <head>
     <meta charset="UTF-8">
-    <title>盈利预测分析</title>
+    <title>盈预分析</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
     <script src="https://cdn.bootcss.com/echarts/4.6.0/echarts.min.js"></script>
     <style>
+        .ui-state-highlight {
+            background-color: yellow;
+        }
     </style>
 </head>
 <body>
@@ -51,13 +54,22 @@
                 if (lastFileNames != null && $.inArray(name, lastFileNames) == -1) {
                     name = '<b>' + name + '</b>';
                 }
-                html += '<div class="col-md-1">' + name + '<br/><sup>' + values[j] + '</sup>' + '</div>';
+                html += '<div class="col-md-1"><span tag="' + name + '">' + name + '</span><br/><sup>' + values[j] + '</sup>' + '</div>';
             }
             html += '</div>';
             let el = $(html);
             el.prependTo($('#list'));
             lastFileNames = names;
         }
+        $('span[tag]').click(function (){
+            let name = $(this).text();
+            $('span[tag]').removeClass("ui-state-highlight");
+            $('span[tag]').each(function () {
+                if($(this).text() == name){
+                    $(this).addClass("ui-state-highlight")
+                }
+            });
+        })
     }
 
     function show() {
