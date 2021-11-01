@@ -35,6 +35,7 @@
 
     function showAsList(result) {
         let lastFileNames = null;
+        let prevValue = {};
         for (let i = result.files.length - 1; i >= 0; i--) {
             let file = result.files[i];
             let fileData = $.ajax({
@@ -43,6 +44,7 @@
             });
             let names = fileData.responseJSON.names;
             let values = fileData.responseJSON.values;
+            let prevValues = fileData.responseJSON.prevValues;
             if (names == undefined) {
                 continue;
             }
@@ -54,18 +56,28 @@
                 if (lastFileNames != null && $.inArray(name, lastFileNames) == -1) {
                     name = '<b>' + name + '</b>';
                 }
-                html += '<div class="col-md-1"><span tag="' + name + '">' + name + '</span><br/><sup>' + values[j] + '</sup>' + '</div>';
+                let valueString = values[j];
+                if (prevValues != null) {
+                    let prevValue = prevValues[names[j]];
+                    if (prevValue != undefined) {
+                        if (values[j] / prevValue >= 1.2) {
+                            valueString = '<b>' + values[j] + '/' + prevValue + '</b>';
+                        }
+                    }
+                }
+
+                html += '<div class="col-md-1"><span tag="' + name + '">' + name + '</span><br/><sup>' + valueString + '</sup>' + '</div>';
             }
             html += '</div>';
             let el = $(html);
             el.prependTo($('#list'));
             lastFileNames = names;
         }
-        $('span[tag]').click(function (){
+        $('span[tag]').click(function () {
             let name = $(this).text();
             $('span[tag]').removeClass("ui-state-highlight");
             $('span[tag]').each(function () {
-                if($(this).text() == name){
+                if ($(this).text() == name) {
                     $(this).addClass("ui-state-highlight")
                 }
             });
@@ -78,6 +90,8 @@
             async: false
         }).responseJSON;
         showAsList(result);
+        // 暂不要图表
+        return;
         $(result.files).each(function () {
             var file = this.toString();
             var el = $('<div>' +
